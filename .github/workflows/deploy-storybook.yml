@@ -5,27 +5,30 @@ on:
     branches:
       - main  # Change to your branch
 
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: Set up Node
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '20.x'
 
       - name: Install dependencies
         run: npm install
 
-      - name: Build Storybook
-        run: npm run build-storybook
-
-      - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
+      - uses: bitovi/github-actions-storybook-to-github-pages@v1.0.3
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./storybook-static-github
+          install_command: npm ci # default: npm ci
+          build_command: npm run build-storybook # default: npm run build-storybook
+          path: storybook-static # default: dist/storybook
+          checkout: false # default: true
